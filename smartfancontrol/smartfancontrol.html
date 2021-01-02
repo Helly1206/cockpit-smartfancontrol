@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SmartFanControl</title>
+    <meta charset="utf-8">
+    <link href="../base1/patternfly.css" rel="stylesheet" type="text/css">
+    <link href="../stdplgin/stdplgin.css" rel="stylesheet" type="text/css">
+    <script src="../base1/cockpit.js"></script>
+    <script src="../stdplgin/stdplgin-common.js"></script>
+</head>
+<body class="pf-m-redhat-font" id="xnas-page">
+    <div class="content-header-extra with-navtabs">
+        <div id="smartfancontrolpg" class="stdpg">
+            <div id="smartfancontrol-tabs">
+                <ul role="tablist" class="nav nav-tabs">
+                    <li role="presentation" class="active">
+                        <a id="sfc-tab-monitor" role="tab" aria-controls="sfc-pane-monitor" aria-selected="true">Monitor</a>
+                    </li>
+                    <li role="presentation" class="">
+                        <a id="sfc-tab-fan" role="tab" aria-controls="sfc-pane-fan" tabindex="-1" aria-selected="false">Fan settings</a>
+                    </li>
+                    <li role="presentation" class="">
+                        <a id="sfc-tab-temp" role="tab" aria-controls="sfc-pane-temp" tabindex="-1" aria-selected="false">Temperature settings</a>
+                    </li>
+                    <li role="presentation" class="">
+                        <a id="sfc-tab-ctrl" role="tab" aria-controls="sfc-pane-ctrl" tabindex="-1" aria-selected="false">Control Settings</a>
+                    </li>
+                    <li role="presentation" class="">
+                        <a id="sfc-tab-log" role="tab" aria-controls="sfc-pane-log" tabindex="-1" aria-selected="false">Log</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="tab-content">
+        <div id="sfc-pane-monitor" aria-labelledby="sfc-tab-monitor" role="tabpanel" aria-hidden="false" class="fade tab-pane active in"></div>
+        <div id="sfc-pane-fan" aria-labelledby="sfc-tab-fan" role="tabpanel" aria-hidden="true" class="fade tab-pane"></div>
+        <div id="sfc-pane-temp" aria-labelledby="sfc-tab-temp" role="tabpanel" aria-hidden="true" class="fade tab-pane"></div>
+        <div id="sfc-pane-ctrl" aria-labelledby="sfc-tab-ctrl" role="tabpanel" aria-hidden="true" class="fade tab-pane"></div>
+        <div id="sfc-pane-log" aria-labelledby="sfc-tab-log" role="tabpanel" aria-hidden="true" class="fade tab-pane"></div>
+    </div>
+    <div id="modal-dialog">
+    </div>
+    <div id="modal-dialog2">
+    </div>
+    <script src="smartfancontrol.js"></script>
+</body>
+</html>

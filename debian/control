@@ -1,0 +1,15 @@
+Source: cockpit-smartfancontrol
+Section: net
+Priority: optional
+Maintainer: Helly1206
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.6
+XB-Plugin-Section: sharing
+
+Package: cockpit-smartfancontrol
+Architecture: all
+Depends: smartfancontrol (>= 0.83),
+         cockpit,
+         cockpit-stdplgin (>= 0.82),
+         ${misc:Depends}
+Description: cockpit-smartfancontrol (cockpit UI for smartfancontrol)
