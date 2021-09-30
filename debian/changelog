@@ -1,4 +1,4 @@
-cockpit-smartfancontrol (0.81) stable; urgency=low
+cockpit-smartfancontrol (0.82) stable; urgency=low
 
   * Fixed monitor not updating
   * Added data-logging functionality
