@@ -11,6 +11,6 @@ Architecture: all
 Depends: python3,
          smartfancontrol (>= 0.83),
          cockpit,
-         cockpit-stdplgin (>= 0.82),
+         cockpit-stdplgin (>= 0.87),
          ${misc:Depends}
 Description: cockpit-smartfancontrol (cockpit UI for smartfancontrol)

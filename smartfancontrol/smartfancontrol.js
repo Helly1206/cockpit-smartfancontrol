@@ -13,20 +13,32 @@ class sfcMonitor {
     constructor(el) {
         this.el = el;
         this.name = "monitor";
+        this.startButton = null;
+        this.stopButton = null;
         this.pane = new tabPane(this, el, this.name);
         this.refresh = 1000;
     }
 
     displayContent(el) {
         this.displayMonitor();
-        this.getSettings();
     }
 
     displayMonitor(text = "") {
         this.pane.dispose();
         this.pane.build(text, true);
         this.pane.getTitle().innerHTML = this.name.charAt(0).toUpperCase() + this.name.slice(1);
+        this.displayButtons(true);
         this.setTimer();
+        this.getSettings();
+    }
+
+    //TBD
+    displayGraph(text = "") {
+        this.pane.dispose();
+        this.pane.build(text, false, true);
+        this.pane.getTitle().innerHTML = this.name.charAt(0).toUpperCase() + this.name.slice(1) + " - Graph";
+        this.displayButtons(false);
+        this.getData();
     }
 
     getSettings(callback) {
@@ -38,6 +50,22 @@ class sfcMonitor {
         runCmd.call(this, cb);
     }
 
+    displayButtons(grp = true) {
+        var cb = function(data, status) {
+            var running = (status == 0);
+            if (grp) {
+                this.pane.addButton("graph", "Log graph", this.displayGraph, true, false, false);
+            } else {
+                this.pane.addButton("monitor", "Monitor", this.displayMonitor, true, false, false);
+                this.pane.addButton("refresh", "Refresh", this.displayGraph, false, false, false);
+            }
+            this.startButton = this.pane.addButton("start", "Start logging", this.startLogging, false, running, false);
+            this.stopButton = this.pane.addButton("stop", "Stop logging", this.stopLogging, false, !running, false);
+        }
+        this.update = [];
+        runLog.call(this, cb, "status");
+    }
+
     refreshSettings(callback) {
         var cb = function(data) {
             var iData = JSON.parse(data);
@@ -46,8 +74,11 @@ class sfcMonitor {
                 param: "temp",
                 value: iData.temp
             }, {
-                param: "fan",
-                value: iData.fan
+                param: "rpm",
+                value: iData.rpm
+            }, {
+                param: "pwm",
+                value: iData.pwm
             }, {
                 param: "alarm",
                 value: iData.alarm
@@ -114,6 +145,195 @@ class sfcMonitor {
             }
         ];
         this.pane.getSettingsEditForm().setData(dlgData);
+    }
+
+    startLogging() {
+        var cb = function(data, status) {
+            if (status == 0) {
+                if ((this.startButton) && (this.stopButton)) {
+                    this.pane.setButtonDisabled(this.startButton, true);
+                    this.pane.setButtonDisabled(this.stopButton, false);
+                }
+            }
+        }
+        this.update = [];
+        runLog.call(this, cb, "start");
+    }
+
+    stopLogging() {
+        var cb = function(data, status) {
+            if (status == 0) {
+                if ((this.startButton) && (this.stopButton)) {
+                    this.pane.setButtonDisabled(this.startButton, false);
+                    this.pane.setButtonDisabled(this.stopButton, true);
+                }
+            }
+        }
+        this.update = [];
+        runLog.call(this, cb, "stop");
+    }
+
+    getData() {
+        var cb = function(data, status) {
+            if (status == 0) {
+                var iData = JSON.parse(data);
+                this.buildGraph(iData);
+            }
+        }
+        this.update = [];
+        runLog.call(this, cb);
+    }
+
+    buildGraph(iData) {
+        var tempText = "";
+        var ctrlText = "";
+        var lData = this.processData(iData);
+        if ('settings' in iData) {
+            if ('farenheit' in iData.settings) {
+                if (iData.settings.farenheit) {
+                    tempText = "Temperature [°F]";
+                } else {
+                    tempText = "Temperature [°C]";
+                }
+            }
+            if ('mode' in iData.settings) {
+                if (iData.settings.mode == "RPM") {
+                    ctrlText = "Fan speed [RPM]";
+                } else if (iData.settings.mode == "PWM") {
+                    ctrlText = "Fan control [PWM]";
+                } else {
+                    ctrlText = "Fan control [ONOFF]";
+                }
+            }
+        }
+        const data = {
+            labels: lData.time,
+            datasets: [{
+                label: tempText,
+                yAxisID: 'temp',
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: lData.temp
+            }, {
+                label: ctrlText,
+                yAxisID: 'ctrl',
+                backgroundColor: 'rgb(70,130,180)',
+                borderColor: 'rgb(70,130,180)',
+                data: lData.ctrl
+            }]
+        };
+        // TBD !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //can we zoom, tickdistance, x axis linear?
+        const config = {
+            type: 'line',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                aspectRatio: 2.5,
+                scales: {
+                    x: {
+                        type: 'linear',
+                            min: lData.scale.min,
+                            max: lData.scale.max,
+                            ticks: {
+                                stepSize: lData.scale.step
+                            },
+                        title: {
+                            display: true,
+                            text: 'time [min]'
+                        }
+                    },
+                    temp: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: tempText
+                        }
+                    },
+                    ctrl: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: ctrlText
+                        },
+                        grid: {
+                            drawOnChartArea: false, // only want the grid lines for one axis to show up
+                        }
+                    }
+                }
+            }
+        };
+        this.pane.getCanvas().setData();
+        var myChart = new Chart(this.pane.getCanvas().getCanvas(), config);
+    }
+
+    processData(iData) {
+        var tmStart = 0;
+        var tmMax = 0;
+        var lData = {};
+        var timeScale = {};
+        var timeData = [];
+        var tempData = [];
+        var ctrlData = [];
+        var first = true;
+        var modeRPM = false;
+
+        if ('settings' in iData) {
+            if ('mode' in iData.settings) {
+                if (iData.settings.mode == "RPM") {
+                    modeRPM = true;
+                }
+            }
+        }
+
+        if ('data' in iData) {
+            iData.data.forEach(datum => {
+                if ('time' in datum) {
+                    let tmCur = parseInt(datum.time);
+                    if (first) {
+                        tmStart = tmCur;
+                        tmMax = 0;
+                        timeData.push(0);
+                        first = false;
+                    } else {
+                        let tmVal = Math.trunc((tmCur-tmStart)/60);
+                        if (tmVal > tmMax) {
+                            tmMax = tmVal;
+                        }
+                        timeData.push(tmVal);
+                    }
+                }
+                if ('temp' in datum) {
+                    tempData.push(parseFloat(datum.temp));
+                }
+                if (modeRPM) {
+                    if ('rpm' in datum) {
+                        ctrlData.push(parseFloat(datum.rpm));
+                    }
+                } else {
+                    if ('pwm' in datum) {
+                        ctrlData.push(parseFloat(datum.pwm));
+                    }
+                }
+            });
+        }
+        timeScale.min = 0;
+        timeScale.max = tmMax;
+        timeScale.step = 1;
+        if (timeScale.max-timeScale.min > 10) {
+            timeScale.step = Math.round((timeScale.max-timeScale.min)/10);
+        }
+        lData.scale = timeScale;
+        lData.time = timeData;
+        lData.temp = tempData;
+        lData.ctrl = ctrlData;
+
+        return lData;
     }
 }
 
@@ -727,6 +947,21 @@ function runCmd(callback, args = [], json = null, cmd = "/opt/smartfancontrol/sm
     if (json) {
         command = command.concat(JSON.stringify(json));
     }
+    return cockpit.spawn(command, { err: "out", superuser: "require" })
+        .done(cbDone.bind(this))
+        .fail(cbFail.bind(this));
+}
+
+function runLog(callback, args = [], cmd = "/opt/smartfancontrol/smartfancontrol-logger.py") {
+    var cbDone = function(data) {
+        callback.call(this, data, 0);
+    };
+    var cbFail = function(message, data) {
+        callback.call(this, "[]", 1);
+        //new msgBox(this, "SmartFanControl command failed", "Command error: " + (data ? data : message));
+    };
+    var command = [cmd];
+    command = command.concat(args);
     return cockpit.spawn(command, { err: "out", superuser: "require" })
         .done(cbDone.bind(this))
         .fail(cbFail.bind(this));

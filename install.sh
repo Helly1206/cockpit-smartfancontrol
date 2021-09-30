@@ -27,6 +27,7 @@ minify_install () {
     minify -r -o ".$USRLOC" --match="\.js" $NAME
     #minify -r -o ".$USRLOC" --match="\.css" $NAME
     #minify -r -o ".$USRLOC" --match="\.html" $NAME
+    cp "$NAME/chart.js" ".$USRLOC/"
     cp "$NAME/smartfancontrol.html" ".$USRLOC/"
     cp "$NAME/manifest.json" ".$USRLOC/"
 }
@@ -74,7 +75,7 @@ then
 	fakeroot debian/rules clean binary
 	mv ../*.deb .
 else
-	echo "$LNAME install script"
+    echo "$LNAME install script"
     minify_install
 
     if [ ! -d "$USRLOC" ]; then
@@ -89,5 +90,21 @@ else
     fi
     if [ -d ".$OPTLOC" ]; then
         cp -r ".$OPTLOC/." "$OPTLOC/"
+    fi
+
+    echo "Checking and installing required PIP packages"
+
+    PKG_OK=$(dpkg-query -W --showformat='${Status}\n' python3-pip|grep "install ok installed")
+    echo Checking for pip3: $PKG_OK
+    if [ "" == "$PKG_OK" ]; then
+        echo "No pip3. Setting up pip3."
+        sudo apt-get --force-yes --yes install python3-pip
+    fi
+
+    PKG_OK=$(sudo -H pip3 freeze| grep -i "psutil==")
+    echo Checking for psutil: $PKG_OK
+    if [ "" == "$PKG_OK" ]; then
+        echo "No psutil. Setting up psutil."
+        sudo -H pip3 install psutil
     fi
 fi
