@@ -833,7 +833,7 @@ class sfcCtrl {
                 disabled: false,
                 readonly: false,
                 comment: "The temperature hysteresis to switch the fan off again. Default is " +
-                          displayTemp(5, farenheit).toString() + " " + tempUnit + ". Only used in ONOFF mode."
+                          displayTemp(5, farenheit).toString() + " " + tempUnit + ". Only used in ONOFF or idle running mode."
             }, {
                 param: "TempStart",
                 text: "Start temperature [" + tempUnit + "]",
