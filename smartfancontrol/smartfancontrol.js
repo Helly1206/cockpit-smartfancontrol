@@ -819,7 +819,8 @@ class sfcCtrl {
                 disabled: false,
                 readonly: false,
                 comment: "The temperature to switch the fan on. Default is " +
-                          displayTemp(55, farenheit).toString() + " " + tempUnit + ". Only used in ONOFF mode. "
+                          displayTemp(55, farenheit).toString() + " " + tempUnit + " in ONOFF mode. " +
+                          "In other modes this is the idle running temperature (100 RPM or minimum PWM). Set > TempStart if not used."
             }, {
                 param: "TempHyst",
                 text: "Hysteresis [" + tempUnit + "]",

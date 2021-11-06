@@ -1,3 +1,6 @@
+[B]0.8.3[/B]
+- Changed TempOn comment for idle running
+
 [B]0.8.2[/B]
 - Fixed monitor not updating
 - Added data-logging functionality
