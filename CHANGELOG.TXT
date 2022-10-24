@@ -1,3 +1,6 @@
+[B]0.8.4[/B]
+- Updated gui to cockpit >=264
+
 [B]0.8.3[/B]
 - Changed TempOn comment for idle running
 

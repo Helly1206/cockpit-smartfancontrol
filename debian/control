@@ -9,6 +9,7 @@ XB-Plugin-Section: sharing
 Package: cockpit-smartfancontrol
 Architecture: all
 Depends: python3,
+         python3-pip,
          smartfancontrol (>= 0.83),
          cockpit,
          cockpit-stdplgin (>= 0.87),
