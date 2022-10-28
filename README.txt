@@ -1,4 +1,4 @@
-cockpit-smartfancontrol v0.8.4
+cockpit-smartfancontrol v0.8.5
 
 cockpit-smartfancontrol -- cockpit UI for SmartFanControl
 ======================= == ======= == === ===============
