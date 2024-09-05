@@ -20,7 +20,7 @@ from database import database
 #########################################################
 
 ####################### GLOBALS #########################
-VERSION      = "0.80"
+VERSION      = "0.86"
 STDINTERVAL  = 60
 MON_FILENAME = "/run/smartfancontrol"
 LOG_FILENAME = "/var/log/smartfancontrol-data.log"

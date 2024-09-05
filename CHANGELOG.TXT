@@ -1,3 +1,6 @@
+[B]0.8.6[/B]
+- Update for stdplgin v0.9.3+
+
 [B]0.8.5[/B]
 - Fixed deb generation folder error
 

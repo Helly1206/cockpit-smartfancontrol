@@ -1,3 +1,9 @@
+cockpit-smartfancontrol (0.86) stable; urgency=low
+
+  * Update for stdplgin v0.9.3+
+
+ -- Helly1206 <hellyrulez@hotmail.com>  Thu, 5 Sep 2024 1913:44:42 +0100
+
 cockpit-smartfancontrol (0.85) stable; urgency=low
 
   * Fixed deb generation folder error

@@ -18,7 +18,7 @@ from database import database
 #########################################################
 
 ####################### GLOBALS #########################
-VERSION      = "0.80"
+VERSION      = "0.86"
 DAEMONSFC    = "smartfancontrol"
 CMDNOTEXIST  = 127
 CMDTIMEOUT   = 124
